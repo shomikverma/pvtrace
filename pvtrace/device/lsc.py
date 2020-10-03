@@ -11,7 +11,7 @@ from pvtrace.data import lumogen_f_red_305, fluro_red
 from pvtrace.scene.renderer import MeshcatRenderer
 from pvtrace.material.surface import Surface, FresnelSurfaceDelegate
 from pvtrace.material.distribution import Distribution
-from pvtrace.algorithm import photon_tracer, photon_tracer_new
+from pvtrace.algorithm import photon_tracer
 from dataclasses import asdict
 import numpy as np
 import pandas as pd
@@ -347,8 +347,8 @@ class LSC(object):
         vis = self._renderer
         count = 0
         for ray in scene.emit(n):
-            history = photon_tracer_new.follow(scene, ray, emit_method=emit_method)
-            rays, surfnorms, events = zip(*history)
+            history = photon_tracer.follow(scene, ray, emit_method=emit_method)
+            rays, events = zip(*history)
             store["entrance_rays"].append((rays[1], events[1]))
             if events[-1] in (Event.ABSORB, Event.KILL):
                 # final event is a lost store path information at final event

@@ -277,7 +277,7 @@ class MeshcatRenderer(object):
             )
 
         if world_segment == "exclude":
-            rays, surfnorms, events = zip(*history)
+            rays, events = zip(*history)
             try:
                 idx = events.index(Event.EXIT)
                 history = history[0:idx]
@@ -291,7 +291,7 @@ class MeshcatRenderer(object):
             raise AppError("Need at least two points to render a line.")
 
         ids = []
-        rays, surfnorms, events = zip(*history)
+        rays, events = zip(*history)
         for (start_part, end_part) in zip(history[:-1], history[1:]):
             start_ray, end_ray = start_part[0], end_part[0]
             nanometers = start_ray.wavelength
@@ -307,7 +307,7 @@ class MeshcatRenderer(object):
             ids.append(self.add_line_segment(start, end, colour=colour))
 
             if baubles:
-                event = start_part[-1]
+                event = start_part[1]
                 if event in {Event.TRANSMIT}:
                     baubid = self.get_next_identifer()
                     vis[f"exit/{baubid}"].set_object(
