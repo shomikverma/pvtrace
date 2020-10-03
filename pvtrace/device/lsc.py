@@ -11,7 +11,7 @@ from pvtrace.data import lumogen_f_red_305, fluro_red
 from pvtrace.scene.renderer import MeshcatRenderer
 from pvtrace.material.surface import Surface, FresnelSurfaceDelegate
 from pvtrace.material.distribution import Distribution
-from pvtrace.algorithm import photon_tracer
+from pvtrace.algorithm import photon_tracer, photon_tracer_new
 from dataclasses import asdict
 import numpy as np
 import pandas as pd
@@ -20,7 +20,7 @@ import time
 
 
 class OptionalMirrorAndSolarCell(FresnelSurfaceDelegate):
-    """ A delegate adds an ideal specular mirror to the bottom surface and 
+    """ A delegate adds an ideal specular mirror to the bottom surface and
         perfectly indexed matched and perfectly absorbing solar cells to the edges.
     """
 
@@ -88,7 +88,7 @@ class AirGapMirror(FresnelSurfaceDelegate):
 
 class LSC(object):
     """Abstraction of a luminescent solar concentrator.
-    
+
        This is intended to be a high-level API to easy use.
     """
 
@@ -305,7 +305,7 @@ class LSC(object):
         bauble_radius=None,
         world_segment="short",
         short_length=None,
-        open_browser=False,
+        open_browser=True,
     ):
 
         if bauble_radius is None:
@@ -347,8 +347,8 @@ class LSC(object):
         vis = self._renderer
         count = 0
         for ray in scene.emit(n):
-            history = photon_tracer.follow(scene, ray, emit_method=emit_method)
-            rays, events = zip(*history)
+            history = photon_tracer_new.follow(scene, ray, emit_method=emit_method)
+            rays, surfnorms, events = zip(*history)
             store["entrance_rays"].append((rays[1], events[1]))
             if events[-1] in (Event.ABSORB, Event.KILL):
                 # final event is a lost store path information at final event
@@ -400,30 +400,30 @@ class LSC(object):
 
     def expand_coords(self, df, column):
         """ Returns a dataframe with coordinate column expanded into components.
-    
+
             Parameters
             ----------
             df : pandas.DataFrame
                 The dataframe
             column : str
                 The column label
-        
+
             Returns
             -------
             df : pandas.DataFrame
                 The dataframe with the column expanded.
-        
+
             Example
             -------
             Given the dataframe::
-        
+
                 df = pd.DataFrame({'position': [(1,2,3)]})
-        
+
             the function will return a new dataframe::
-        
+
                 edf = expand_coords(df, 'position')
                 edf == pd.DataFrame({'position_x': [1], 'position_y': [2], 'position_z': [3]})
-        
+
         """
         coords = np.stack(df[column].values)
         df["{}_x".format(column)] = coords[:, 0]
@@ -434,7 +434,7 @@ class LSC(object):
 
     def label_facets(self, df, length, width, height):
         """ Label rows with facet names for a box LSC.
-    
+
             Notes
             -----
             This function only works if the coordinates in the dataframe

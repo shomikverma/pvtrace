@@ -115,7 +115,7 @@ class MeshcatRenderer(object):
         colour=0xFFFFFF,
     ) -> str:
         """ Add a line segment to the scene and return the identifier.
-        
+
             Parameters
             ----------
             start : tuple
@@ -149,9 +149,9 @@ class MeshcatRenderer(object):
     def add_path(
         self, vertices: Tuple[Tuple[float, float, float]], colour=0xFFFFFF
     ) -> str:
-        """ Add a line to the scene and return the identifier. The line is made from 
+        """ Add a line to the scene and return the identifier. The line is made from
             multiple line segments. The line will be drawn with a single colour.
-        
+
             Parameters
             ----------
             vertices : tuple of tuple of float
@@ -162,9 +162,9 @@ class MeshcatRenderer(object):
 
             See also
             --------
-            add_ray_path : Draws the line using individual line segments. Use this 
+            add_ray_path : Draws the line using individual line segments. Use this
             method when each line segment needs to be drawn with a different colour.
-        
+
             Returns
             -------
             identifier : str
@@ -185,8 +185,8 @@ class MeshcatRenderer(object):
         return identifier
 
     def add_ray(self, ray: Ray, length: float) -> str:
-        """ Add the ray path as a single connected line and return an identifier. 
-        
+        """ Add the ray path as a single connected line and return an identifier.
+
             Parameters
             ----------
             ray : Ray
@@ -195,7 +195,7 @@ class MeshcatRenderer(object):
             Notes
             -----
             Internally the line is drawn using `add_line_segment` because the colour of
-            each segment could be unique. If this proves too inefficiency use 
+            each segment could be unique. If this proves too inefficiency use
             `add_path`.
 
             See also
@@ -215,8 +215,8 @@ class MeshcatRenderer(object):
         return identifier
 
     def add_ray_path(self, rays: [Ray]) -> str:
-        """ Add the ray path as a single connected line and return an identifier. 
-        
+        """ Add the ray path as a single connected line and return an identifier.
+
             Parameters
             ----------
             rays : list of Ray
@@ -255,7 +255,7 @@ class MeshcatRenderer(object):
         bauble_radius: float = 0.01,
     ):
         """ Similar to `add_ray_path` but with improved visualisation options.
-    
+
             Parameters
             ----------
             history: tuple
@@ -277,7 +277,7 @@ class MeshcatRenderer(object):
             )
 
         if world_segment == "exclude":
-            rays, events = zip(*history)
+            rays, surfnorms, events = zip(*history)
             try:
                 idx = events.index(Event.EXIT)
                 history = history[0:idx]
@@ -291,7 +291,7 @@ class MeshcatRenderer(object):
             raise AppError("Need at least two points to render a line.")
 
         ids = []
-        rays, events = zip(*history)
+        rays, surfnorms, events = zip(*history)
         for (start_part, end_part) in zip(history[:-1], history[1:]):
             start_ray, end_ray = start_part[0], end_part[0]
             nanometers = start_ray.wavelength
@@ -307,7 +307,7 @@ class MeshcatRenderer(object):
             ids.append(self.add_line_segment(start, end, colour=colour))
 
             if baubles:
-                event = start_part[1]
+                event = start_part[-1]
                 if event in {Event.TRANSMIT}:
                     baubid = self.get_next_identifer()
                     vis[f"exit/{baubid}"].set_object(
@@ -330,7 +330,7 @@ class MeshcatRenderer(object):
     def _will_add_expendable_to_scene(self, item):
         """ Private method used to notify buffer that a line or ray object will be
             added to the scene.
-        
+
             Notes
             -----
             This is used to manage the buffer size and will remove the oldest object
@@ -341,8 +341,8 @@ class MeshcatRenderer(object):
 
     def _did_add_expendable_to_scene(self, identifier):
         """ Private method use to notify the buffer that an expendable object has been
-            added to the scene. 
-        
+            added to the scene.
+
             Notes
             -----
             The identifier is used to remove the object when it is becomes the oldest

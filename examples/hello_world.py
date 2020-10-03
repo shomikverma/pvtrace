@@ -33,7 +33,7 @@ scene = Scene(world)
 renderer.render(scene)
 for ray in scene.emit(100):
     steps = photon_tracer.follow(scene, ray)
-    path, events = zip(*steps)
+    path, surfnorms, events = zip(*steps)
     renderer.add_ray_path(path)
     time.sleep(0.1)
 
