@@ -5,6 +5,7 @@ import jsonschema
 import yaml
 import json
 import os
+import typer
 
 
 SCHEMA = os.path.join(
@@ -40,10 +41,16 @@ def parse(filename):
 
 def parse_v_1_0(spec):
     print(spec)
+    print(spec['nodes'])
 
+
+def main(scene: typer.FileText = typer.Option(...)):
+    scene_spec = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), scene.name
+    )
+    parse(scene_spec)
 
 if __name__ == "__main__":
-    scene_spec = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "pvtrace-scene-spec.yml"
-    )
+    typer.run(main)
+
     print("OK")
