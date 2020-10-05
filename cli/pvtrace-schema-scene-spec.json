@@ -63,6 +63,10 @@
                         }
                     ]
                 },
+                "geometry":{
+                  "type":"object"
+
+                },
                 "box": {
                     "$ref": "#/definitions/box"
                 },
@@ -91,7 +95,7 @@
             "oneOf": [
                 {
                     "required": [
-                        "box"
+                        "geometry"
                     ]
                 },
                 {
@@ -196,7 +200,7 @@
             "id": "#/definitions/material",
             "type": "object",
             "properties": {
-                "refractive-index": {
+                "refractive_index": {
                     "type": "number",
                     "minimum": 1
                 },
@@ -208,7 +212,7 @@
                 }
             },
             "required": [
-                "refractive-index"
+                "refractive_index"
             ]
         },
         "component": {

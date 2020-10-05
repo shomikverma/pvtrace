@@ -15,7 +15,7 @@ world = Node(
 )
 
 box = Node(
-    name="sphere (glass)",
+    name="box (glass)",
     geometry=Box(
         (10.0, 10.0, 1.0),
         material=Material(refractive_index=1.5),
@@ -36,5 +36,3 @@ for ray in scene.emit(100):
     steps = photon_tracer.follow(scene, ray)
 
 print(f"Took {time.time() - start_t}s to trace 100 rays.")
-
-

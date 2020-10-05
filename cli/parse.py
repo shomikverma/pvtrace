@@ -6,7 +6,8 @@ import yaml
 import json
 import os
 import typer
-
+from pvtrace import *
+from types import SimpleNamespace
 
 SCHEMA = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "pvtrace-schema-scene-spec.json"
@@ -40,8 +41,21 @@ def parse(filename):
 
 
 def parse_v_1_0(spec):
-    print(spec)
-    print(spec['nodes'])
+    print(spec['nodes']['world'])
+    x = json.loads(json.dumps(spec), object_hook=lambda d: SimpleNamespace(**d))
+    print(x.nodes.world)
+    world = json.loads(json.dumps(spec['nodes']['world']), object_hook=lambda d: Node(**d))
+    # print(world)
+
+    # world = Node(
+    #     name = "world (air)"
+    # )
+    # if hasattr(x.nodes.world, 'box'):
+    #     world.geometry = Box(
+    #         size = x.nodes.world.box.size,
+    #         material = Material(refractive_index=getattr(x.nodes.world.box.material,'refractive-index'))
+    #     )
+
 
 
 def main(scene: typer.FileText = typer.Option(...)):
