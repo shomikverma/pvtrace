@@ -30,9 +30,9 @@ def load_spec(filename):
     return spec
 
 
-def parse(filename: str) -> Scene:
+def parse(file: str) -> Scene:
     schema = load_schema()
-    spec = load_spec(filename.read())
+    spec = load_spec(file.read())
     jsonschema.validate(spec, schema=schema)
     schema_version = spec["version"]
     if schema_version == "1.0":
