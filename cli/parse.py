@@ -7,7 +7,7 @@ import json
 import os
 import pvtrace
 from pvtrace import Scene, Box, Sphere
-
+import typer
 
 SCHEMA = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "pvtrace-schema-scene-spec.json"
@@ -24,14 +24,15 @@ def load_schema():
 
 def load_spec(filename):
     """Load user's scene specification file."""
-    with open(filename, "r") as fp:
-        spec = yaml.load(fp, Loader=yaml.Loader)
-        return spec
+    # with open(filename, "r") as fp:
+    fp = filename
+    spec = yaml.load(fp, Loader=yaml.Loader)
+    return spec
 
 
 def parse(filename: str) -> Scene:
     schema = load_schema()
-    spec = load_spec(filename)
+    spec = load_spec(filename.read())
     jsonschema.validate(spec, schema=schema)
     schema_version = spec["version"]
     if schema_version == "1.0":
@@ -47,7 +48,8 @@ def parse_v_1_0(spec: dict) -> Scene:
         refractive_index = spec["refractive-index"]
         component_names = []
         if "components" in spec:
-            raise NotImplementedError("Cannot parse components yet")
+            pass
+            # raise NotImplementedError("Cannot parse components yet")
 
     def parse_box(spec):
         print(spec)
@@ -77,9 +79,12 @@ def parse_v_1_0(spec: dict) -> Scene:
     nodes = {k: parse_node(v) for k, v in node_specs.items()}
     return Scene(nodes["world"])
 
+def main(yaml: typer.FileText = typer.Option(...)):
+    parse(yaml)
 
 if __name__ == "__main__":
-    scene_spec = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "pvtrace-scene-spec.yml"
-    )
-    parse(scene_spec)
+    # scene_spec = os.path.join(
+    #     os.path.dirname(os.path.realpath(__file__)), "pvtrace-scene-spec.yml"
+    # )
+    typer.run(main)
+    
