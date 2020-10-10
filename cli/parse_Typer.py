@@ -22,17 +22,16 @@ def load_schema():
         return schema
 
 
-def load_spec(filename):
+def load_spec(file):
     """Load user's scene specification file."""
     # with open(filename, "r") as fp:
-    fp = filename
-    spec = yaml.load(fp, Loader=yaml.Loader)
+    spec = yaml.load(file, Loader=yaml.Loader)
     return spec
 
 
 def parse(file: str) -> Scene:
     schema = load_schema()
-    spec = load_spec(file.read())
+    spec = load_spec(file)
     jsonschema.validate(spec, schema=schema)
     schema_version = spec["version"]
     if schema_version == "1.0":
